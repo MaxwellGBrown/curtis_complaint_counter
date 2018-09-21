@@ -1,4 +1,5 @@
 """Tests for complaint_counter.py"""
+import json
 from unittest.mock import MagicMock, Mock
 from urllib.parse import urlencode
 
@@ -50,7 +51,7 @@ def test_lambda_handler_quotes_the_complaint():
     complaint = "about foo and bar"
     response = lambda_handler({"body": request_body(text=complaint)})
 
-    assert f'\n> {complaint}' in response['body']
+    assert f'\n> {complaint}' in json.loads(response['body'])['text']
 
 
 def test_lambda_handler_saves_complaints_to_storage(dynamodb):
@@ -80,4 +81,12 @@ def test_lambda_handler_returns_a_total_number_of_complaints(dynamodb):
 
     response = lambda_handler({"body": request_body()})
 
-    assert f"\nCurtis has *{count}* recorded complaints." in response['body']
+    response_text = json.loads(response['body'])['text']
+    assert f"\nCurtis has *{count}* recorded complaints." in response_text
+
+
+def test_lambda_handler_returns_a_channel_visible_response():
+    """Tests that lambda_handler yells curtis's complaints to the channel."""
+    response = lambda_handler({"body": request_body()})
+
+    assert json.loads(response['body'])['response_type'] == 'in_channel'

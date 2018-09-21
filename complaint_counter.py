@@ -1,4 +1,5 @@
 """An AWS Lambda endpoint expecting Slack integration requests."""
+import json
 import time
 import urllib.parse
 import uuid
@@ -45,6 +46,9 @@ def lambda_handler(event, context=None):
     response = {
         'statusCode': 200,
         'headers': dict(),
-        'body': response_body,
+        'body': json.dumps({
+            'response_type': 'in_channel',
+            'text': response_body,
+        }),
     }
     return response
