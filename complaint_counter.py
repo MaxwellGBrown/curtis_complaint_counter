@@ -27,7 +27,7 @@ def lambda_handler(event, context=None):
         TableName="CurtisComplaints",
         Item={
             "uuid": {"S": str(uuid.uuid4())},
-            "timestamp": {"N": int(time.time())},
+            "timestamp": {"N": f"{time.time():.10g}"},
             "complaint": {"S": command_text},
             "reporter": {"S": request_body['user_name']},
         }
