@@ -2,7 +2,7 @@
 
 from setuptools import setup
 
-install_requires = []
+install_requires = ["boto3==1.9.8"]
 
 tests_require = install_requires + ["pytest==3.3.1"]
 

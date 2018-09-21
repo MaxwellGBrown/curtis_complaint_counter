@@ -4,12 +4,7 @@ import time
 import urllib.parse
 import uuid
 
-try:
-    from boto3 import client
-except ModuleNotFoundError:
-    # Probably testing. Fuck it.
-    from unittest.mock import Mock
-    client = Mock()
+from boto3 import client
 
 
 dynamodb = client('dynamodb')
