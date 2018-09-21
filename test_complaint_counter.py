@@ -1,5 +1,5 @@
 """Tests for complaint_counter.py"""
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 from urllib.parse import urlencode
 
 import pytest
@@ -34,7 +34,7 @@ def dynamodb(monkeypatch):
     # boto3 is not installed for testing
     monkeypatch.setattr(complaint_counter, 'boto3', Mock(), raising=False)
 
-    dynamodb = Mock()
+    dynamodb = MagicMock()
     monkeypatch.setattr(complaint_counter, 'dynamodb', dynamodb)
     return dynamodb
 
@@ -71,3 +71,13 @@ def test_lambda_handler_saves_complaints_to_storage(dynamodb):
     assert item["timestamp"]["N"]
     assert item["reporter"]["S"] == username
     assert item["complaint"]["S"] == text
+
+
+def test_lambda_handler_returns_a_total_number_of_complaints(dynamodb):
+    """Tests that lambda_handler is counting the complaints."""
+    count = 774
+    dynamodb.scan.return_value = {"Count": 774}
+
+    response = lambda_handler({"body": request_body()})
+
+    assert f"\nCurtis has *{count}* recorded complaints." in response['body']

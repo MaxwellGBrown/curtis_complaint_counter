@@ -33,7 +33,14 @@ def lambda_handler(event, context=None):
         }
     )
 
-    response_body = f'Curtis Complained!\n\n> {command_text}'
+    response_body = f'*Curtis Complained!*\n\n> {command_text}'
+
+    # NOTE: scanning a dynamo table can be a really expensive operation, but
+    #       it's the only way to get a live count of records in the table.
+    #       Since this table will likely only be very small it will likely be
+    #       okay for the forseeable future.
+    scan = dynamodb.scan(TableName="CurtisComplaints")
+    response_body += f'\n\nCurtis has *{scan["Count"]}* recorded complaints.'
 
     response = {
         'statusCode': 200,
